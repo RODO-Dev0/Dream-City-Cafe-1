@@ -128,7 +128,8 @@
     .scroll-hint-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scroll-pulse 2s ease-in-out infinite;}
     @keyframes scroll-pulse{0%,100%{opacity:.4;transform:scaleY(.6);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}}
     /* ── NAV ── */
-    .sticky-nav{position:sticky;top:0;z-index:700;background:rgba(253,246,236,.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(200,145,58,.12);}
+    .sticky-nav{position:sticky;top:0;z-index:700;background:rgba(253,246,236,.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(200,145,58,.12);overflow:hidden;max-height:60px;transition:max-height .35s cubic-bezier(.4,0,.2,1), border-color .35s;}
+    .sticky-nav.nav-hidden{max-height:0;border-color:transparent;}
     .nav-inner{display:flex;overflow-x:auto;scrollbar-width:none;padding:0 18px;}
     .nav-inner::-webkit-scrollbar{display:none;}
     .nav-link{position:relative;padding:16px 16px 13px;font-size:.74rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--warm-gray);text-decoration:none;white-space:nowrap;transition:color .2s;font-weight:500;}
@@ -403,7 +404,7 @@
     <button class="lang-btn" data-lang="ku">کوردی</button>
   </div>
   <button class="fab-cart" id="fabCart">
-    <i class="fas fa-bag-shopping"></i>
+    <i class="fas fa-bell-concierge"></i>
     <span id="fabLabel">Order</span>
     <span class="fab-badge" id="fabBadge">0</span>
   </button>
@@ -1390,6 +1391,28 @@ function initReveal() {
   }), { threshold: 0.1 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 }
+
+/* ── SCROLL-HIDE NAV ── */
+(function(){
+  const nav = document.querySelector('.sticky-nav');
+  let lastY = 0, ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        // Only hide after user has scrolled past the hero (~100px)
+        if (y > 100) {
+          nav.classList.toggle('nav-hidden', y > lastY);
+        } else {
+          nav.classList.remove('nav-hidden');
+        }
+        lastY = y;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+})();
 
 /* INIT */
 applyLang('en');
